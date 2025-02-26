@@ -3,310 +3,693 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zebra Reward</title>
+    <title>Zebra - Home</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #e91e63;
+            --primary-dark: #c2185b;
+            --primary-light: #f8bbd0;
+            --accent: #536dfe;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --bg-light: #f5f5f7;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --header-height: 70px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background-color: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--bg-light);
             min-height: 100vh;
-            padding: 20px;
+            color: var(--text-primary);
+            overflow-x: hidden;
         }
 
-        .container {
+        .header {
+            background-color: var(--bg-white);
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-container {
+            max-width: 1200px;
             width: 100%;
-            max-width: 400px;
-            background-color: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.5s ease-in-out;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .logo-container {
+            display: flex;
+            align-items: center;
         }
 
         .logo {
-            text-align: center;
-            margin-bottom: 30px;
+            height: 40px;
+            margin-right: 15px;
         }
 
-        .logo img {
-            max-width: 180px;
-            height: auto;
+        .brand-name {
+            font-weight: 700;
+            font-size: 1.4rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 14px 18px;
-            border: 1px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        input:focus, select:focus {
-            border-color: #e91e63;
-            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.1);
-        }
-
-        input::placeholder, select {
-            color: #999;
-        }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            background-color: #e91e63;
-            color: white;
+        .menu-button {
+            background: none;
             border: none;
-            border-radius: 25px;
-            font-size: 18px;
             cursor: pointer;
-            margin-top: 15px;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
+            display: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: var(--primary-light);
+            background-opacity: 0.1;
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #f5f5f7 0%, #e8eaf6 100%);
+            padding: 120px 30px 60px;
+            text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        button:hover {
-            background-color: #d81b60;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button .loading-spinner {
-            display: none;
+        .hero-section::before {
+            content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
+            background: radial-gradient(circle, rgba(233, 30, 99, 0.1) 0%, rgba(233, 30, 99, 0) 70%);
         }
 
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(83, 109, 254, 0.1) 0%, rgba(83, 109, 254, 0) 70%);
         }
 
-        button.loading {
-            color: transparent;
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        button.loading .loading-spinner {
-            display: block;
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
         }
 
-        .success-container {
-            display: none;
-            text-align: center;
-        }
-
-        .success-icon {
-            color: #4CAF50;
-            font-size: 50px;
-            margin-bottom: 20px;
-            animation: scaleIn 0.5s ease-out;
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0); }
-            to { transform: scale(1); }
-        }
-
-        .success-message {
-            margin-bottom: 20px;
-            color: #555;
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 30px;
             line-height: 1.6;
         }
 
-        .redeem-code {
-            background-color: #ffebee;
-            color: #e91e63;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 22px;
-            font-weight: bold;
-            margin: 25px 0;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.15);
-            animation: pulse 2s infinite;
+        .services-section {
+            padding: 80px 30px;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(233, 30, 99, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 12px 0;
-            color: #666;
-            padding: 8px 0;
-            border-bottom: 1px dashed #eee;
-        }
-
-        .info-row:last-of-type {
-            border-bottom: none;
-        }
-
-        .note {
-            font-size: 14px;
-            color: #888;
-            margin-top: 25px;
-            font-style: italic;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .error-message {
-            color: #f44336;
-            margin-top: 5px;
-            font-size: 14px;
-            display: none;
-            padding-left: 10px;
-            animation: shakeError 0.5s ease-in-out;
-        }
-
-        @keyframes shakeError {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .form-feedback {
+        .section-title {
             text-align: center;
-            color: #e91e63;
-            margin: 15px 0;
-            font-size: 14px;
-            display: none;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: var(--bg-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            padding: 30px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .service-icon .material-icons {
+            color: var(--primary);
+            font-size: 32px;
+        }
+
+        .service-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .service-description {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .service-button {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .service-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .service-button .material-icons {
+            font-size: 18px;
+        }
+
+        .features-section {
+            padding: 80px 30px;
+            background-color: var(--bg-white);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-icon .material-icons {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .feature-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background-color: #212121;
+            color: white;
+            padding: 60px 30px 30px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #f5f5f5;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #bdbdbd;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .social-icon:hover {
+            background-color: var(--primary);
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #9e9e9e;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--header-height);
+                right: -100%;
+                width: 250px;
+                background-color: var(--bg-white);
+                height: calc(100vh - var(--header-height));
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: var(--shadow-md);
+                transition: right 0.3s ease;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .nav-link {
+                width: 100%;
+                padding: 12px 16px;
+            }
+
+            .menu-button {
+                display: block;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .services-section, 
+            .features-section {
+                padding: 60px 20px;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+                margin-bottom: 40px;
+            }
+
+            .service-card {
+                padding: 25px;
+            }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 25px 20px;
+            .hero-title {
+                font-size: 1.8rem;
             }
-            
-            input, select {
-                padding: 12px 15px;
-                font-size: 15px;
+
+            .hero-section {
+                padding: 100px 20px 50px;
             }
-            
-            .redeem-code {
-                font-size: 18px;
-                padding: 12px;
+
+            .features-grid {
+                grid-template-columns: 1fr;
             }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <div class="container" id="form-container">
-        <div class="logo">
-            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" id="logo-img">
-        </div>
-        
-        <form id="api-form">
-            <div class="form-group">
-                <input type="text" id="api-key" placeholder="enter a valid api key" required>
-                <div class="error-message" id="api-key-error">Please enter a valid API key</div>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" class="logo">
+                <!-- <span class="brand-name">ZEBRA</span> -->
             </div>
             
-            <div class="form-group">
-                <input type="email" id="api-email" placeholder="API Email" required>
-                <div class="error-message" id="api-email-error">Please enter a valid email address</div>
-            </div>
-            <div class="form-group">
-                <input type="email" id="personal-email" placeholder="Personal Email" required>
-                <div class="error-message" id="personal-email-error">Please enter a valid personal email address</div>
-            </div>
-            <div class="form-group">
-                <input type="text" id="name" placeholder="Name" required>
-                <div class="error-message" id="name-error">Please enter your name</div>
-            </div>
-            
-            <div class="form-group">
-                <select id="api-type" required>
-                    <option value="" disabled selected>API Type (imgbb, google cloud)</option>
-                    <option value="imgbb">imgbb</option>
-                    <option value="google cloud">google cloud</option>
-                </select>
-                <div class="error-message" id="api-type-error">Please select an API type</div>
-            </div>
-            
-            <div class="form-group">
-                <input type="text" id="promo-code" placeholder="Promo code">
-            </div>
-            
-            <div class="form-feedback" id="form-feedback"></div>
-            
-            <button type="submit" id="submit-btn">
-                Check in
-                <div class="loading-spinner"></div>
+            <button class="menu-button" id="menu-toggle">
+                <span class="material-icons">menu</span>
             </button>
-        </form>
-    </div>
+            
+            <nav class="nav-menu" id="nav-menu">
+                <a href="home.html" class="nav-link active">Home</a>
+                <a href="index.html" class="nav-link">Survey</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="redeem.html" class="nav-link">Redeem</a>
+            </nav>
+        </div>
+    </header>
     
-    <div class="container success-container" id="success-container">
-        <div class="logo">
-            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo">
+    <section class="hero-section">
+        <div class="hero-container">
+            <h1 class="hero-title animate__animated animate__fadeInDown">Your Gateway to API Rewards</h1>
+            <p class="hero-subtitle animate__animated animate__fadeIn animate__delay-1s">Experience the best reward system for your API contributions. Earn rewards, manage your profile, and redeem codes all in one place.</p>
         </div>
-        
-        <div class="success-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
+    </section>
+    
+    <section class="services-section">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-container">
+            <a href="index.html" class="service-card fade-in">
+                <div class="service-icon">
+                    <span class="material-icons">poll</span>
+                </div>
+                <h3 class="service-title">API Survey</h3>
+                <p class="service-description">Complete our quick survey to earn rewards and help us improve our services. Share your API usage and get instant benefits.</p>
+                <button class="service-button">
+                    Start Survey
+                    <span class="material-icons">arrow_forward</span>
+                </button>
+            </a>
+            
+            <a href="profile.html" class="service-card fade-in">
+                <div class="service-icon">
+                    <span class="material-icons">account_circle</span>
+                </div>
+                <h3 class="service-title">Profile & Wallet</h3>
+                <p class="service-description">Manage your personal information and check your reward balance in your wallet. Track your earnings and API contributions.</p>
+                <button class="service-button">
+                    View Profile
+                    <span class="material-icons">arrow_forward</span>
+                </button>
+            </a>
+            
+            <a href="redeem.html" class="service-card fade-in">
+                <div class="service-icon">
+                    <span class="material-icons">redeem</span>
+                </div>
+                <h3 class="service-title">Redeem Rewards</h3>
+                <p class="service-description">Redeem your earned rewards and get cashback with your personal code. Convert your API contributions into real value.</p>
+                <button class="service-button">
+                    Redeem Now
+                    <span class="material-icons">arrow_forward</span>
+                </button>
+            </a>
         </div>
-        
-        <div class="success-message">
-            <p>Dear, <span id="user-name">User</span></p>
-            <p>Your <span id="api-type-display">IMgBB</span> Api key <span id="masked-api-key">****54543</span> is submitted successfully.</p>
+    </section>
+    
+    <section class="features-section">
+        <div class="features-container">
+            <h2 class="section-title">Why Choose Zebra</h2>
+            <div class="features-grid">
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">
+                        <span class="material-icons">security</span>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Secure Platform</h3>
+                        <p>Your API keys and personal information are always secure with our advanced encryption.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">
+                        <span class="material-icons">speed</span>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Instant Rewards</h3>
+                        <p>Get immediate rewards for your API contributions with our streamlined process.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">
+                        <span class="material-icons">devices</span>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Responsive Design</h3>
+                        <p>Access your rewards and profile from any device with our fully responsive platform.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">
+                        <span class="material-icons">support_agent</span>
+                    </div>
+                    <div class="feature-content">
+                        <h3>24/7 Support</h3>
+                        <p>Our dedicated support team is always available to assist with any questions.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <p>redeem code is</p>
-        <div class="redeem-code" id="redeem-code">088-556-447</div>
-        
-        <div class="info-row">
-            <span>Date</span>
-            <span id="current-date">24.06.2025</span>
+    </section>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-column">
+                    <h3>Zebra</h3>
+                    <p style="color: #bdbdbd; margin-bottom: 15px;">Your ultimate platform for API rewards and management.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">
+                            <span class="material-icons">facebook</span>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <span class="material-icons">twitter</span>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <span class="material-icons">linkedin</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">API Survey</a></li>
+                        <li><a href="profile.html">Profile & Wallet</a></li>
+                        <li><a href="redeem.html">Redeem Rewards</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2025 Zebra Rewards. All rights reserved.</p>
+            </div>
         </div>
-        
-        <div class="info-row">
-            <span>Time</span>
-            <span id="current-time">11:30am</span>
-        </div>
-        
-        <div class="note">
-            note you can use this code to redeem your cashback
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    </footer>
+    
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                const icon = menuToggle.querySelector('.material-icons');
+                icon.textContent = navMenu.classList.contains('active') ? 'close' : 'menu';
+            });
+            
+            // Fade-in animation on scroll
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            function checkFade() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementTop < windowHeight - 100) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+            
+            // Initial check
+            checkFade();
+            
+            // Check on scroll
+            window.addEventListener('scroll', checkFade);
+        });
+    </script>
 </body>
 </html>
