@@ -58,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loginForm.reset();
         document.getElementById('profile-form').reset();
         document.getElementById('password-form').reset();
-        document.getElementById('withdrawal-form').reset(); // Reset withdrawal form
         
         // Hide password fields
         passwordField.style.display = 'none';
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupLoginForm();
     setupProfileForm();
     setupPasswordForm();
-    setupWithdrawalForm(); // Initialize withdrawal form
 });
 
 // Handle login form
@@ -303,89 +301,6 @@ function setupPasswordForm() {
     });
 }
 
-// Setup withdrawal form
-function setupWithdrawalForm() {
-    const withdrawalForm = document.getElementById('withdrawal-form');
-    
-    withdrawalForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Reset error messages
-        document.getElementById('withdrawal-amount-error').style.display = 'none';
-        
-        const amount = parseFloat(document.getElementById('withdrawal-amount').value.trim());
-        const method = document.getElementById('withdrawal-method').value;
-        const accountDetails = document.getElementById('withdrawal-account').value.trim();
-        
-        // Validate amount
-        if (isNaN(amount) || amount <= 0) {
-            document.getElementById('withdrawal-amount-error').textContent = 'Please enter a valid amount';
-            document.getElementById('withdrawal-amount-error').style.display = 'block';
-            return;
-        }
-        
-        // Check if user has sufficient balance
-        if (amount > parseFloat(currentUser.Balance || 0)) {
-            document.getElementById('withdrawal-amount-error').textContent = 'Insufficient balance';
-            document.getElementById('withdrawal-amount-error').style.display = 'block';
-            return;
-        }
-        
-        // Validate payment method and account details
-        if (!method) {
-            document.getElementById('withdrawal-amount-error').textContent = 'Please select a payment method';
-            document.getElementById('withdrawal-amount-error').style.display = 'block';
-            return;
-        }
-        
-        if (!accountDetails) {
-            document.getElementById('withdrawal-amount-error').textContent = 'Please enter your account details';
-            document.getElementById('withdrawal-amount-error').style.display = 'block';
-            return;
-        }
-        
-        const withdrawBtn = document.getElementById('withdraw-btn');
-        withdrawBtn.classList.add('loading');
-        withdrawBtn.disabled = true;
-        
-        try {
-            // Here you would typically create a withdrawal request and update the user's balance
-            // For demonstration purposes, we'll just update the UI
-            
-            // Simulate withdrawal request
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Update user balance (in a real application, this would be done through the server)
-            const newBalance = parseFloat(currentUser.Balance) - amount;
-            await updateUserProfile(currentUser.id, {
-                Balance: newBalance
-            });
-            
-            currentUser.Balance = newBalance;
-            
-            // Update UI
-            updateDashboardUI();
-            
-            // Reset form
-            withdrawalForm.reset();
-            
-            // Show success message
-            const successMessage = document.getElementById('withdrawal-success');
-            successMessage.style.display = 'block';
-            successMessage.textContent = `Withdrawal request of ₹${amount.toFixed(2)} has been submitted!`;
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
-        } catch (error) {
-            console.error('Withdrawal error:', error);
-            alert('An error occurred while processing your withdrawal. Please try again.');
-        } finally {
-            withdrawBtn.classList.remove('loading');
-            withdrawBtn.disabled = false;
-        }
-    });
-}
-
 // Update dashboard UI with user data
 function updateDashboardUI() {
     if (!currentUser) return;
@@ -407,83 +322,43 @@ function updateDashboardUI() {
     document.getElementById('profile-personal-email').value = currentUser['Personal Email'] || '';
     document.getElementById('profile-phone').value = currentUser.Phone || '';
     
-    // Update withdraw available amount
-    document.getElementById('available-balance').textContent = `₹${parseFloat(currentUser.Balance || 0).toFixed(2)}`;
-    document.getElementById('withdrawal-amount-max').textContent = parseFloat(currentUser.Balance || 0).toFixed(2);
-    document.getElementById('withdrawal-amount').max = parseFloat(currentUser.Balance || 0);
-    
     // Update redeem codes
     updateRedeemCodesList();
 }
 
-// Update redeem codes list - FIX: Added debugging and error handling
+// Update redeem codes list
 function updateRedeemCodesList() {
     const codesList = document.getElementById('redeem-codes-list');
-    
-    // Ensure the element exists
-    if (!codesList) {
-        console.error('Redeem codes list element not found');
-        return;
-    }
-    
     codesList.innerHTML = '';
     
-    console.log('Updating redeem codes list with', userCodes.length, 'codes');
-    
-    if (!userCodes || userCodes.length === 0) {
+    if (userCodes.length === 0) {
         codesList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No redeem codes found</p>';
         return;
     }
     
-    try {
-        // Sort codes by date (newest first)
-        userCodes.sort((a, b) => {
-            const dateA = a['Submission Date'] ? new Date(a['Submission Date']) : new Date(0);
-            const dateB = b['Submission Date'] ? new Date(b['Submission Date']) : new Date(0);
-            return dateB - dateA;
-        });
+    // Sort codes by date (newest first)
+    userCodes.sort((a, b) => {
+        return new Date(b['Submission Date']) - new Date(a['Submission Date']);
+    });
+    
+    userCodes.forEach(code => {
+        const isActive = code.Status === 'Active';
+        const codeItem = document.createElement('div');
+        codeItem.className = `code-item ${isActive ? 'active' : 'used'}`;
         
-        userCodes.forEach(code => {
-            const isActive = code.Status === 'Active';
-            const codeItem = document.createElement('div');
-            codeItem.className = `code-item ${isActive ? 'active' : 'used'}`;
-            
-            const submissionDate = formatDisplayDate(code['Submission Date'] || '');
-            const redemptionDate = code['Redemption Date'] ? formatDisplayDate(code['Redemption Date']) : '';
-            
-            codeItem.innerHTML = `
-                <div class="code-details">
-                    <span class="code">${code['Redemption Code'] || ''}</span>
-                    <span class="date">${submissionDate} ${redemptionDate ? '• Redeemed: ' + redemptionDate : ''}</span>
-                </div>
-                <div class="code-actions">
-                    ${isActive ? '<button class="action-btn withdraw-code-btn">Withdraw</button>' : ''}
-                    <span class="status ${isActive ? 'active' : 'used'}">${code.Status || ''}</span>
-                </div>
-            `;
-            
-            codesList.appendChild(codeItem);
-            
-            // Add event listener for withdraw button
-            if (isActive) {
-                const withdrawBtn = codeItem.querySelector('.withdraw-code-btn');
-                withdrawBtn.addEventListener('click', () => {
-                    // Switch to withdrawal tab and pre-fill the form
-                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                    
-                    document.querySelector('.tab-btn[data-tab="withdrawal"]').classList.add('active');
-                    document.getElementById('withdrawal-tab').classList.add('active');
-                    
-                    // Pre-fill code information
-                    document.getElementById('withdrawal-code').value = code['Redemption Code'] || '';
-                });
-            }
-        });
-    } catch (error) {
-        console.error('Error updating redeem codes list:', error);
-        codesList.innerHTML = '<p style="text-align: center; color: #f44336; padding: 20px;">Error loading redeem codes. Please refresh the page.</p>';
-    }
+        const submissionDate = formatDisplayDate(code['Submission Date'] || '');
+        const redemptionDate = code['Redemption Date'] ? formatDisplayDate(code['Redemption Date']) : '';
+        
+        codeItem.innerHTML = `
+            <div class="code-details">
+                <span class="code">${code['Redemption Code'] || ''}</span>
+                <span class="date">${submissionDate} ${redemptionDate ? '• Redeemed: ' + redemptionDate : ''}</span>
+            </div>
+            <span class="status ${isActive ? 'active' : 'used'}">${code.Status || ''}</span>
+        `;
+        
+        codesList.appendChild(codeItem);
+    });
 }
 
 // Airtable API functions
@@ -563,17 +438,9 @@ async function updateUserProfile(userId, profileData) {
     }
 }
 
-// Load user redemption codes - FIX: Added better error handling
+// Load user redemption codes
 async function loadUserCodes() {
     try {
-        if (!currentUser || !currentUser.Email) {
-            console.error('Cannot load codes: User not logged in or email missing');
-            userCodes = [];
-            return;
-        }
-        
-        console.log('Loading codes for email:', currentUser.Email);
-        
         const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${SUBMISSIONS_TABLE}?filterByFormula={User Email}="${encodeURIComponent(currentUser.Email)}"`, {
             method: 'GET',
             headers: {
@@ -582,22 +449,15 @@ async function loadUserCodes() {
             }
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
-        }
-        
         const data = await response.json();
-        console.log('Received codes data:', data);
         
         if (data.records && data.records.length > 0) {
             userCodes = data.records.map(record => record.fields);
         } else {
-            console.log('No codes found for user');
             userCodes = [];
         }
     } catch (error) {
         console.error('Error loading user codes:', error);
-        userCodes = [];
         throw error;
     }
 }
