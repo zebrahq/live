@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zebra Reward Redemption</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo img {
+            max-width: 180px;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.1);
+        }
+
+        input::placeholder, select {
+            color: #999;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: #d81b60;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        button.loading {
+            color: transparent;
+        }
+
+        button.loading .loading-spinner {
+            display: block;
+        }
+
+        .scan-section {
+            display: none;
+        }
+
+        .qr-container {
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+            border: 2px solid #e91e63;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background-color: #f5f5f5;
+            border: none;
+            border-bottom: 3px solid #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            background-color: #fff;
+            color: #e91e63;
+            border-bottom: 3px solid #e91e63;
+        }
+
+        .tab-button:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        .tab-button:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Results section */
+        .results-container {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .user-details {
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            color: #666;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .detail-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .detail-row .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .reward-options {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .reward-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reward-option:hover {
+            border-color: #e91e63;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(233, 30, 99, 0.15);
+        }
+
+        .reward-option.selected {
+            border-color: #e91e63;
+            background-color: #ffe6ed;
+        }
+
+        .reward-option-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e91e63;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+        }
+
+        .reward-option-details {
+            flex: 1;
+        }
+
+        .reward-option-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .reward-option-description {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .form-feedback {
+            text-align: center;
+            color: #e91e63;
+            margin: 15px 0;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* Spin wheel section */
+        .wheel-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .wheel {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        .wheel-outer {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.1, 0.05, 0.1, 1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            clip-path: polygon(0 0, 100% 0, 0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .wheel-arrow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid #e91e63;
+            z-index: 11;
+        }
+
+        .wheel-value {
+            position: absolute;
+            transform: rotate(180deg);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .wheel-result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #e91e63;
+            display: none;
+        }
+
+        /* Success message */
+        .success-message {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .success-icon {
+            color: #4CAF50;
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .reward-amount {
+            background-color: #ffebee;
+            color: #e91e63;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 25px 0;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.15);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(233, 30, 99, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            input, select {
+                padding: 12px 15px;
+                font-size: 15px;
+            }
+            
+            .wheel {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="redeem-container">
+        <div class="logo">
+            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" id="logo-img" onerror="this.outerHTML='<h1 style=\'color: #e91e63; font-size: 28px; font-weight: bold; font-style: italic;\'>zebra reward</h1>'">
+        </div>
+        
+        <h1>Redeem Your Reward</h1>
+        
+        <div class="tab-buttons">
+            <button class="tab-button active" id="tab-enter">Enter Code</button>
+            <button class="tab-button" id="tab-scan">Scan Code</button>
+        </div>
+        
+        <div class="tab-content active" id="content-enter">
+            <div class="form-group">
+                <input type="text" id="redeem-code" placeholder="Enter your redemption code" required>
+            </div>
+            
+            <div class="form-feedback" id="code-feedback"></div>
+            
+            <button type="button" id="validate-code-btn">
+                Validate Code
+                <div class="loading-spinner"></div>
+            </button>
+        </div>
+        
+        <div class="tab-content" id="content-scan">
+            <div class="qr-container" id="qr-reader"></div>
+            
+            <div class="form-feedback" id="scan-feedback"></div>
+            
+            <button type="button" id="start-scan-btn">
+                Start Scanner
+                <div class="loading-spinner"></div>
+            </button>
+        </div>
+    </div>
+    
+    <div class="container results-container" id="results-container">
+        <div class="logo">
+            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" onerror="this.outerHTML='<h1 style=\'color: #e91e63; font-size: 28px; font-weight: bold; font-style: italic;\'>zebra reward</h1>'">
+        </div>
+        
+        <h1>Redemption Details</h1>
+        
+        <div class="user-details">
+            <div class="detail-row">
+                <span class="label">Name:</span>
+                <span id="user-name">John Doe</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">API Type:</span>
+                <span id="api-type">ImgBB</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Submission Date:</span>
+                <span id="submission-date">24/06/2025</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Code:</span>
+                <span id="redemption-code">088-556-447</span>
+            </div>
+        </div>
+        
+        <h2>Choose Your Reward Option</h2>
+        
+        <div class="reward-options">
+            <div class="reward-option" data-option="spin">
+                <div class="reward-option-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+                <div class="reward-option-details">
+                    <div class="reward-option-title">Spin & Win</div>
+                    <div class="reward-option-description">Try your luck and win up to ₹15</div>
+                </div>
+            </div>
+            
+            <div class="reward-option" data-option="cash">
+                <div class="reward-option-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path d="M6 12h.01M18 12h.01"></path>
+                    </svg>
+                </div>
+                <div class="reward-option-details">
+                    <div class="reward-option-title">Direct Cash</div>
+                    <div class="reward-option-description">Get ₹10 directly to your account</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-feedback" id="reward-feedback"></div>
+        
+        <button type="button" id="proceed-btn">
+            Proceed
+            <div class="loading-spinner"></div>
+        </button>
+    </div>
+    
+    <div class="container wheel-container" id="wheel-container">
+        <div class="logo">
+            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" onerror="this.outerHTML='<h1 style=\'color: #e91e63; font-size: 28px; font-weight: bold; font-style: italic;\'>zebra reward</h1>'">
+        </div>
+        
+        <h1>Spin & Win</h1>
+        
+        <div class="wheel">
+            <div class="wheel-arrow"></div>
+            <div class="wheel-outer" id="wheel-outer"></div>
+            <div class="wheel-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e91e63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="wheel-result" id="wheel-result"></div>
+        
+        <button type="button" id="spin-btn">
+            Spin Now
+            <div class="loading-spinner"></div>
+        </button>
+    </div>
+    
+    <div class="container success-message" id="success-container">
+        <div class="logo">
+            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" onerror="this.outerHTML='<h1 style=\'color: #e91e63; font-size: 28px; font-weight: bold; font-style: italic;\'>zebra reward</h1>'">
+        </div>
+        
+        <div class="success-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        
+        <h1>Congratulations!</h1>
+        
+        <p>You've successfully redeemed your reward</p>
+        
+        <div class="reward-amount" id="final-amount">₹10.00</div>
+        
+        <p>The amount has been added to your account balance.</p>
+        
+        <div class="action-buttons">
+            <button type="button" class="action-button" id="home-btn">Go Home</button>
+            <button type="button" class="action-button" id="redeem-another-btn">Redeem Another</button>
+        </div>
+    </div>
+
+    <script src="redeem.js"></script>
+
+</body>
+</html>
