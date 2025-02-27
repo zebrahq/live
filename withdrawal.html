@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal - Zebra Reward</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            max-width: 180px;
+            height: auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .tab-btn.active {
+            color: #e91e63;
+            border-bottom-color: #e91e63;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.1);
+        }
+
+        input::placeholder, select {
+            color: #999;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: #d81b60;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        button.loading {
+            color: transparent;
+        }
+
+        button.loading .loading-spinner {
+            display: block;
+        }
+
+        .error-message {
+            color: #f44336;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+            padding-left: 10px;
+            animation: shakeError 0.5s ease-in-out;
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            display: none;
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Transaction Section */
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .transaction-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .transaction-item.pending {
+            border-left: 4px solid #ff9800;
+        }
+
+        .transaction-item.completed {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .transaction-item.rejected {
+            border-left: 4px solid #f44336;
+        }
+
+        .transaction-item .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-item .transaction-id {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .transaction-item .transaction-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .transaction-item .transaction-amount {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .transaction-item .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .transaction-item .status.pending {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+        }
+
+        .transaction-item .status.completed {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .transaction-item .status.rejected {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .transaction-item .view-btn {
+            padding: 6px 12px;
+            background-color: transparent;
+            color: #e91e63;
+            border: 1px solid #e91e63;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .transaction-item .view-btn:hover {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            min-width: 120px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-method.selected {
+            border-color: #e91e63;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
+        }
+
+        .payment-method img {
+            height: 40px;
+            width: auto;
+            margin-bottom: 10px;
+        }
+
+        .payment-method-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Transaction Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            width: auto;
+            height: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .transaction-detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            flex: 1;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .detail-value {
+            flex: 2;
+            color: #333;
+        }
+
+        /* User Info Section */
+        .user-info-section {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-info-title {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .balance-info {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e91e63;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .payment-methods {
+                flex-direction: column;
+            }
+            
+            .payment-method {
+                width: 100%;
+            }
+            
+            .transaction-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .transaction-item .status {
+                margin-top: 10px;
+            }
+            
+            .transaction-detail-row {
+                flex-direction: column;
+                margin-bottom: 20px;
+            }
+            
+            .detail-label, .detail-value {
+                flex: none;
+            }
+            
+            .detail-label {
+                margin-bottom: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            .tab-btn {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="zebra-reward-logo.png" alt="Zebra Reward Logo" id="logo-img">
+        </div>
+        
+        <h2>Withdrawal Management</h2>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="withdraw">Request Withdrawal</button>
+            <button class="tab-btn" data-tab="status">Check Status</button>
+        </div>
+        
+        <!-- Withdraw Tab -->
+        <div class="tab-content active" id="withdraw-tab">
+            <div class="success-message" id="withdraw-success">
+                Your withdrawal request has been submitted successfully!
+            </div>
+            
+            <form id="withdraw-form">
+                <div class="form-group">
+                    <label class="form-label" for="withdraw-email">Your Email Address</label>
+                    <input type="email" id="withdraw-email" placeholder="Enter your email" required>
+                    <div class="error-message" id="withdraw-email-error">Please enter a valid email</div>
+                </div>
+                
+                <button type="button" id="fetch-info-btn">
+                    Fetch Account Details
+                    <div class="loading-spinner"></div>
+                </button>
+                
+                <div class="user-info-section" id="user-info-container" style="display: none; margin-top: 20px;">
+                    <div class="user-info-header">
+                        <div class="user-info-title">Account Details</div>
+                        <div class="balance-info" id="user-balance">₹0.00</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="withdraw-amount">Withdrawal Amount (Minimum ₹29)</label>
+                        <input type="number" id="withdraw-amount" placeholder="Enter amount" min="29" required>
+                        <div class="error-message" id="withdraw-amount-error">Minimum withdrawal amount is ₹29</div>
+                    </div>
+                    
+                    <label class="form-label">Select Payment Method</label>
+                    <div class="payment-methods">
+                        <div class="payment-method" data-method="Stripe">
+                            <img src="stripe.jpg" alt="Stripe">
+                            <span class="payment-method-name">Stripe</span>
+                        </div>
+                        <div class="payment-method" data-method="PayPal">
+                            <img src="paypal.png" alt="PayPal">
+                            <span class="payment-method-name">PayPal</span>
+                        </div>
+                        <div class="payment-method" data-method="UPI">
+                            <img src="upi-logo.jpeg" alt="UPI">
+                            <span class="payment-method-name">UPI (Via Agent)</span>
+                        </div>
+                    </div>
+                    <div class="error-message" id="payment-method-error">Please select a payment method</div>
+                    
+                    <div class="form-group" id="agent-code-container" style="display: none; margin-top: 20px;">
+                        <label class="form-label" for="agent-code">Agent Code</label>
+                        <input type="text" id="agent-code" placeholder="Enter agent code">
+                        <div class="error-message" id="agent-code-error">Please enter a valid agent code</div>
+                    </div>
+                    
+                    <button type="submit" id="submit-withdraw-btn">
+                        Submit Withdrawal Request
+                        <div class="loading-spinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Status Tab -->
+        <div class="tab-content" id="status-tab">
+            <div class="success-message" id="status-success">
+                Transactions loaded successfully!
+            </div>
+            
+            <form id="status-form">
+                <div class="form-group">
+                    <label class="form-label">Search Transactions By</label>
+                    <select id="search-by">
+                        <option value="email">Email Address</option>
+                        <option value="transaction">Transaction ID</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="search-email-container">
+                    <input type="email" id="search-email" placeholder="Enter your email address">
+                    <div class="error-message" id="search-email-error">Please enter a valid email</div>
+                </div>
+                
+                <div class="form-group" id="search-transaction-container" style="display: none;">
+                    <input type="text" id="search-transaction" placeholder="Enter transaction ID">
+                    <div class="error-message" id="search-transaction-error">Please enter a valid transaction ID</div>
+                </div>
+                
+                <button type="submit" id="search-transactions-btn">
+                    Search Transactions
+                    <div class="loading-spinner"></div>
+                </button>
+            </form>
+            
+            <div id="transactions-container" style="margin-top: 30px;">
+                <!-- Transactions will be displayed here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction Details Modal -->
+    <div class="modal" id="transaction-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Transaction Details</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div id="transaction-details-container">
+                <!-- Transaction details will be displayed here -->
+            </div>
+        </div>
+    </div>
+    <script src="withdraw.js"></script>
+
+</body> </html>       
