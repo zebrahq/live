@@ -171,43 +171,7 @@ function setupWithdrawTab() {
         submitWithdrawBtn.classList.add('loading');
         submitWithdrawBtn.disabled = true;
         
-        try {
-            // Create withdrawal request
-            const agentCode = selectedPaymentMethod === 'UPI' ? document.getElementById('agent-code').value.trim() : '';
-            const transactionId = generateTransactionId();
-            
-            await createWithdrawalRequest({
-                userEmail: currentUser.Email,
-                userName: currentUser.Name || '',
-                amount: amount,
-                paymentMethod: selectedPaymentMethod,
-                agentCode: agentCode,
-                transactionId: transactionId,
-                status: 'In progress'
-            });
-            
-            // Show success message
-            const successMessage = document.getElementById('withdraw-success');
-            successMessage.textContent = `Your withdrawal request has been submitted successfully! Transaction ID: ${transactionId}`;
-            successMessage.style.display = 'block';
-            
-            // Reset form
-            withdrawForm.reset();
-            userInfoContainer.style.display = 'none';
-            paymentMethods.forEach(m => m.classList.remove('selected'));
-            selectedPaymentMethod = null;
-            
-            // Hide success message after some time
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
-        } catch (error) {
-            console.error('Error submitting withdrawal request:', error);
-            alert('An error occurred. Please try again.');
-        } finally {
-            submitWithdrawBtn.classList.remove('loading');
-            submitWithdrawBtn.disabled = false;
-        }
+        
     });
 }
 
