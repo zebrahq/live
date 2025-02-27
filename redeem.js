@@ -1,5 +1,5 @@
 // Define wheel values
-const wheelValues = [5, 6, 8, 9, 10, 11, 12, 13, 14, 15];
+const wheelValues = [4,5, 6, 8, 9, 10, 11, 12];
 const wheelColors = [
     '#4CAF50', // Green
     '#2196F3', // Blue
@@ -9,8 +9,8 @@ const wheelColors = [
     '#3F51B5', // Indigo
     '#009688', // Teal
     '#FF5722', // Deep Orange
-    '#607D8B', // Blue Grey
-    '#8BC34A'  // Light Green
+    // '#607D8B', // Blue Grey
+    // '#8BC34A'  // Light Green
 ];
 
 // Airtable API configuration
@@ -211,7 +211,7 @@ proceedBtn.addEventListener('click', async () => {
             wheelContainer.style.display = 'flex';
         } else if (rewardOption === 'cash') {
             // Direct cash option
-            await processReward(10);
+            await processReward(7);
         }
     } catch (error) {
         console.error('Error processing reward:', error);
