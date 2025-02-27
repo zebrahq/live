@@ -1,5 +1,5 @@
 // Define wheel values
-const wheelValues = [4,5, 6, 8, 9, 10, 11, 12];
+const wheelValues = [7,5, 7, 8, 9, 6, 7, 8];
 const wheelColors = [
     '#4CAF50', // Green
     '#2196F3', // Blue
